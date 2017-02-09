@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-import multiprocessing
+import threading
 
 #define drink list
 drink_list={"Drink 1": [0,1,2], "Drink 2": [1,3,0], "Drink 3": [1,1,1]}
