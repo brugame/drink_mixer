@@ -9,9 +9,9 @@ drink_list={"Drink 1": [0,1,2], "Drink 2": [1,3,0], "Drink 3": [1,1,1]}
 liquid1=2
 liquid2=3
 liquid3=4
-button1=17
-button2=27
-button3=22
+button1=10
+button2=9
+button3=11
 
 #Motor control pins
 enable_pin = 21
@@ -21,12 +21,12 @@ coil_B_1_pin = 26
 coil_B_2_pin = 19
 
 #LCD control pins
-#lcd_rs        = 27  
-#lcd_en        = 22
-#lcd_d4        = 25
-#lcd_d5        = 24
-#lcd_d6        = 23
-#lcd_d7        = 18
+lcd_rs        = 17
+lcd_en        = 27
+lcd_d4        = 22
+lcd_d5        = 24
+lcd_d6        = 23
+lcd_d7        = 18
 
 #Specify 20x4 LCD
 lcd_columns = 20
