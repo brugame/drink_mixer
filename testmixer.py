@@ -8,6 +8,15 @@ from multiprocessing import Process
 #define drink list
 drink_list={"pina colada": [2,0,1], "whiskey": [2,3,0], "vodka": [2,2,2]}
 
+#define movement parameters
+delaytime1 =
+delaytime2 = 
+
+cup_steps = 
+stepsToDispense = 
+stepsToRelease = 
+
+
 #define all pins
 liquid1=2
 liquid2=3
@@ -16,8 +25,12 @@ button1=10
 button2=9
 button3=11
 
+weight_in = 
+cup_button = 
+
 #Motor control pins
-enable_pin = 21
+enable_pin1 = 21
+enable_pin2 = 
 coil_A_1_pin = 20
 coil_A_2_pin = 16
 coil_B_1_pin = 26
@@ -50,8 +63,11 @@ GPIO.output(liquid3,0)
 GPIO.setup(button1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(button2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(button3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(weight_in, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(cup_button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-GPIO.setup(enable_pin, GPIO.OUT)
+GPIO.setup(enable_pin1, GPIO.OUT)
+GPIO.setup(enable_pin2, GPIO.OUT)
 GPIO.setup(coil_A_1_pin, GPIO.OUT)
 GPIO.setup(coil_A_2_pin, GPIO.OUT)
 GPIO.setup(coil_B_1_pin, GPIO.OUT)
@@ -125,13 +141,31 @@ def getName(Drink_List, drinkOrder):
                             return name
     return ''
         
-        
+       
+def cupRelease():
+    GPIO.output(enable_pin1,0)
+    GPIO.output(enable_pin2,1)
+    forward(delaytime2, cup_steps)
+    
+    
+def moveToDispense():
+    GPIO.output(enable_pin2,0)
+    GPIO.output(enable_pin1,1)
+    forward(delaytime1, stepsToDispense)
+    
+def moveToRelease():
+    GPIO.output(enable_pin2,0)
+    GPIO.output(enable_pin1,1)
+    forward(delaytime1, stepsToRelease)
+
 #define release drink function
 def releaseDrink(Drink_List, drinkName):
     liquidnumbers=[liquid1,liquid2,liquid3]
     drink_found=0
     for name in Drink_List:
         if name==drinkName:
+            cupRelease()
+            moveToDispense()
             liquids=Drink_List.get(drinkName)
             drink_found=1
             lcd.clear()
@@ -147,6 +181,7 @@ def releaseDrink(Drink_List, drinkName):
                 else:
                     time.sleep((liquids[j]-liquids[j-1]) * 0.5)
                     GPIO.output(liquidnumbers[j],0)
+            moveToRelease()
     if drink_found != 1:
         lcd.clear()
         lcd.message('No drink found')
@@ -159,21 +194,25 @@ lcd.message('Drink Mixer V1.0')
 time.sleep(2.0)
 
 while True:
-    lcd.clear()
-    lcd.message("waiting for command")
-    if GPIO.input(button1) == True:
-        drinkOrder=getOrder();
-        if drinkOrder == 'error1':
-            lcd.message('Could not understand audio')
-        elif drinkOrder == 'error2':
-            lcd.message('Could not connect to Google Speech Recognition')
-        else:
-            drinkName=getName(drink_list,drinkOrder)
-            releaseDrink(drink_list,drinkName)
-    elif GPIO.input(button2) == True:
-        drinkOrder=getOrder();
-        releaseDrink(drink_list,drinkOrder)
-    elif GPIO.input(button3) == True:
-        drinkOrder=getOrder();
-        releaseDrink(drink_list,drinkOrder)
+    if GPIO.input(cup_button) == Ture:
+        lcd.clear()
+        lcd.message("waiting for command")
+        if GPIO.input(button1) == True:
+            drinkOrder=getOrder();
+            if drinkOrder == 'error1':
+                lcd.message('Could not understand audio')
+            elif drinkOrder == 'error2':
+                lcd.message('Could not connect to Google Speech Recognition')
+            else:
+                drinkName=getName(drink_list,drinkOrder)
+                releaseDrink(drink_list,drinkName)
+        elif GPIO.input(button2) == True:
+            drinkOrder=getOrder();
+            releaseDrink(drink_list,drinkOrder)
+        elif GPIO.input(button3) == True:
+            drinkOrder=getOrder();
+            releaseDrink(drink_list,drinkOrder)
+    else:
+        lcd.clear()
+        lcd.message("Add cups to repository")        
     time.sleep(1.0)
