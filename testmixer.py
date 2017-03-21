@@ -30,7 +30,7 @@ cup_button =
 
 #Motor control pins
 enable_pin1 = 21
-enable_pin2 = 
+enable_pin2 = 13
 coil_A_1_pin = 20
 coil_A_2_pin = 16
 coil_B_1_pin = 26
