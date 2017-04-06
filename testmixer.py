@@ -168,6 +168,7 @@ def moveToRelease():
 
 #define release drink function
 def releaseDrink(Drink_List, drinkName):
+    leds=[led1,led2,led3]
     liquidnumbers=[liquid1,liquid2,liquid3]
     drink_found=0
     for name in Drink_List:
@@ -178,18 +179,29 @@ def releaseDrink(Drink_List, drinkName):
             drink_found=1
             lcd.clear()
             lcd.message("Dispensing " + drinkName)
-            liquids, liquidnumbers = zip(*sorted(zip(liquids, liquidnumbers)))
+            liquids, liquidnumbers, leds = zip(*sorted(zip(liquids, liquidnumbers,leds)))
             for i in range(0,len(liquids)):
                 if liquids[i] > 0:
                     GPIO.output(liquidnumbers[i],1)
+                    GPIO.output(leds[i],1)                    
             for j in range(0,len(liquids)):
                 if j==0:
                     time.sleep(liquids[j]*0.5)
                     GPIO.output(liquidnumbers[j],0)
+                    GPIO.output(leds[j],0)
                 else:
                     time.sleep((liquids[j]-liquids[j-1]) * 0.5)
                     GPIO.output(liquidnumbers[j],0)
+                    GPIO.output(leds[j],0)
             moveToRelease()
+            lcd.clear()
+            lcd.message('Move to Weight Sensor')
+            while GPIO.input(weight_in)==False: 
+                pass
+            lcd.clear()
+            lcd.message("Please remove cup")
+            while GPIO.input(weight_in)==True:
+                pass
     if drink_found != 1:
         lcd.clear()
         lcd.message('No drink found')
@@ -204,7 +216,7 @@ time.sleep(2.0)
 while True:
 #    if GPIO.input(cup_button) == Ture:
     lcd.clear()
-    lcd.message("waiting for command")
+    lcd.message("Waiting for Command")
     if GPIO.input(button1) == True:
         drinkOrder=getOrder();
         if drinkOrder == 'error1':
